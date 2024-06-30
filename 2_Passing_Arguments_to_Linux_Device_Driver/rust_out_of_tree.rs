@@ -19,17 +19,17 @@ module! {
     params: { // see rust/rust/macros/lib.rs for more info
         valueETX: i32 {
             default: 0,
-            permissions: 0o004,
+            permissions: 0o004, // public read-only
             description: "integer value",
         },
         nameETX: str {
             default: b"example string",
-            permissions: 0o004,
+            permissions: 0o004, // public read-only
             description: "string value",
         },
         arr_valueETX: ArrayParam<i32,4> {
             default: [0, 0, 0, 0],
-            permissions: 0o004,
+            permissions: 0o004, // public read-only
             description: "array value",
         },
     },
