@@ -22,6 +22,16 @@ module! {
             permissions: 0o004,
             description: "integer value",
         },
+        nameETX: str {
+            default: b"example string",
+            permissions: 0o004,
+            description: "string value",
+        },
+        arr_valueETX: ArrayParam<i32,4> {
+            default: [0, 0, 0, 0],
+            permissions: 0o004,
+            description: "array value",
+        },
     },
 }
 
@@ -31,6 +41,8 @@ impl kernel::Module for MyModule {
     fn init(_name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
         pr_info!("Kernel Module Inserted Successfully...\n");
         pr_info!("ValueETX = {}\n", valueETX.read());
+        pr_info!("NameETX = {}\n", core::str::from_utf8(nameETX.read())?); // try to handle error
+        pr_info!("ArrayETX = {:?}\n", arr_valueETX.read());
 
         Ok(MyModule)
     }
