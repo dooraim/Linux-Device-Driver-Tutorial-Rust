@@ -19,17 +19,17 @@ module! {
     params: { // see rust/rust/macros/lib.rs for more info
         valueETX: i32 {
             default: 0,
-            permissions: 0o004, // public read-only
+            permissions: 0o644,
             description: "integer value",
         },
         nameETX: str {
             default: b"example string",
-            permissions: 0o004, // public read-only
+            permissions: 0o644,
             description: "string value",
         },
         arr_valueETX: ArrayParam<i32,4> {
             default: [0, 0, 0, 0],
-            permissions: 0o004, // public read-only
+            permissions: 0o644,
             description: "array value",
         },
     },
@@ -39,10 +39,13 @@ struct MyModule;
 
 impl kernel::Module for MyModule {
     fn init(_name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
+        // If the parameter is writeable, then the kparam lock must be
+        // taken to read the parameter:
+        let lock = THIS_MODULE.kernel_param_lock();
         pr_info!("Kernel Module Inserted Successfully...\n");
-        pr_info!("ValueETX = {}\n", valueETX.read());
-        pr_info!("NameETX = {}\n", core::str::from_utf8(nameETX.read())?); // try to handle error
-        pr_info!("ArrayETX = {:?}\n", arr_valueETX.read());
+        pr_info!("ValueETX = {}\n", valueETX.read(&lock));
+        pr_info!("NameETX = {}\n", core::str::from_utf8(nameETX.read(&lock))?); // try to handle error
+        pr_info!("ArrayETX = {:?}\n", arr_valueETX.read(&lock));
 
         Ok(MyModule)
     }
